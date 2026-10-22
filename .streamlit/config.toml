@@ -1,0 +1,17 @@
+[theme]
+primaryColor = "#3B82F6"
+backgroundColor = "#F6F8FB"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1E293B"
+font = "sans serif"
+
+[server]
+maxUploadSize = 50
+# 关闭文件监视：默认的 watcher 会遍历 transformers 子模块并触发其惰性导入，
+# 在未安装 torchvision 时刷出大量无关 traceback（不影响功能，但污染日志且拖慢首屏）。
+# 本项目部署后不依赖热重载，关闭后由用户手动刷新页面即可。
+runOnSave = false
+fileWatcherType = "none"
+
+[browser]
+gatherUsageStats = false
