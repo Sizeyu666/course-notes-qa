@@ -102,6 +102,24 @@ streamlit run app.py
 
 > Embedding 两种方案二选一：默认 `EMBEDDING_PROVIDER=local` 使用本地 bge 模型（首次自动下载约 100MB，已配置国内镜像）；也可改为 `dashscope` 使用通义在线接口（无需安装 torch，需配置 `DASHSCOPE_API_KEY`）。
 
+## 部署 Streamlit Cloud
+
+1. 把仓库推送到 GitHub（公开仓库）；
+2. 打开 [share.streamlit.io](https://share.streamlit.io)，用 GitHub 登录 → **New app**；
+3. 选择仓库 / 分支，Main file path 填 `app.py`；
+4. 点开 **Advanced settings → Secrets**，把 `.streamlit/secrets.example.toml` 的内容粘贴进去并填入真实密钥；
+5. 点击 **Deploy**，等待构建完成后获得 `https://xxx.streamlit.app` 链接。
+
+部署前已做好的云端兼容处理：
+
+- **Chroma / SQLite**：Linux 环境自动安装 `pysqlite3-binary`，`app.py` 顶部在任何第三方库导入前用它替换标准库 `sqlite3`，规避云端系统 SQLite 版本过旧导致的 Chroma 启动失败；
+- **密钥读取**：`src/config.py` 按「系统环境变量 → .env → st.secrets」优先级读取，本地与云端同一套代码；
+- **文件路径**：向量库使用相对路径 `./vector_store`（云端工作目录即仓库根目录），向量库不入库，云端为每用户会话临时构建；
+- **Embedding 选型**：Streamlit Cloud 免费档内存约 1GB，**建议云端使用通义在线 Embedding**（secrets 中设 `EMBEDDING_PROVIDER="dashscope"`），避免安装约 2GB 的 torch；若坚持用本地 bge，需把 `requirements-local-embed.txt` 内容合并进 `requirements.txt`；
+- **时区**：云端容器为 UTC，本应用不展示本地时间，不受影响。
+
+部署后如报错，在 Streamlit Cloud 控制台右下角 **Manage app → Logs** 查看日志，常见问题（缺依赖、密钥未配、内存不足）日志中均有中文提示。
+
 ## 技术实现要点
 
 ### 多轮历史改写

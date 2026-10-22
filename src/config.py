@@ -34,24 +34,43 @@ load_dotenv(dotenv_path=ENV_FILE_PATH, override=False, encoding="utf-8")
 LOCAL_PROVIDER = "local"
 
 
+def _get_streamlit_secret(key: str) -> str:
+    """
+    从 Streamlit secrets 读取配置（部署 Streamlit Cloud 时的密钥来源）。
+
+    非 Streamlit 环境（命令行脚本、单元测试）import streamlit 或访问 st.secrets
+    都可能失败，统一静默返回空串，由调用方回退到默认值。
+    """
+    try:
+        import streamlit as st
+
+        value = st.secrets.get(key, "")
+        return str(value).strip() if value else ""
+    except Exception:  # noqa: BLE001 非 Streamlit 环境或未配置 secrets 均视为缺失
+        return ""
+
+
 def _get_str_env(key: str, default: str = "") -> str:
-    """读取字符串型环境变量；变量不存在或为空时返回 default，并去除首尾空白。"""
+    """读取字符串型配置：系统环境变量 > .env > Streamlit secrets > default。"""
     value = os.getenv(key)
-    if value is None or value.strip() == "":
-        return default
-    return value.strip()
+    if value and value.strip():
+        return value.strip()
+    secret = _get_streamlit_secret(key)
+    if secret:
+        return secret
+    return default
 
 
 def _get_int_env(key: str, default: int) -> int:
-    """读取整数型环境变量；缺省时返回 default，值非法时抛出带中文说明的错误。"""
-    raw = os.getenv(key)
-    if raw is None or raw.strip() == "":
+    """读取整数型配置（环境变量 > Streamlit secrets > default）；值非法时抛出中文错误。"""
+    raw = os.getenv(key) or _get_streamlit_secret(key)
+    if not raw or not raw.strip():
         return default
     try:
         return int(raw.strip())
     except ValueError as exc:
         raise ValueError(
-            f"环境变量 {key} 的值 {raw!r} 不是合法整数，请检查 .env 配置（当前值应为整数）"
+            f"配置项 {key} 的值 {raw!r} 不是合法整数，请检查 .env 或 Streamlit secrets（当前值应为整数）"
         ) from exc
 
 
