@@ -1,0 +1,4 @@
+# 可选：本地离线 Embedding（不使用通义 API 时才安装）
+# 注意：会自动安装 torch，体积约 2GB，首次使用需从 hf-mirror 下载 bge 模型
+langchain-huggingface>=0.1
+sentence-transformers>=3.0
