@@ -11,3 +11,5 @@ python-docx>=1.1
 python-pptx>=0.6.23
 openai>=1.40
 python-dotenv>=1.0
+# Linux only: newer SQLite binary for legacy system SQLite (skipped on Windows/macOS)
+pysqlite3-binary; sys_platform == "linux"
