@@ -63,10 +63,14 @@ def inject_css() -> None:
         .block-container { padding-top: 1.5rem; padding-bottom: 2rem; max-width: 1180px; }
 
         /* ===== 隐藏冗余 chrome，保持干净 ===== */
-        #MainMenu { visibility: hidden; }
+        /* 注意：不能整体隐藏 stToolbar —— 侧边栏收起后的「展开按钮」
+           (stExpandSidebarButton) 位于 toolbar 内，整体隐藏会导致收起后无法再展开。
+           这里只隐藏 toolbar 中多余的 Deploy / 操作区 / 三点菜单，保留展开按钮。 */
+        #MainMenu, [data-testid="stMainMenu"] { visibility: hidden; }
         footer { visibility: hidden; }
         header[data-testid="stHeader"] { background: transparent; }
-        [data-testid="stToolbar"] { display: none; }
+        [data-testid="stAppDeployButton"] { display: none !important; }
+        [data-testid="stToolbarActions"] { display: none !important; }
 
         /* ===== 侧边栏 ===== */
         section[data-testid="stSidebar"] {
