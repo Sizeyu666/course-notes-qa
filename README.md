@@ -15,9 +15,11 @@
 - 📝 **复习提纲**：按"章节名 → 核心概念 → 要点"生成结构化 Markdown 提纲
 - ⚙️ **检索参数可调**：侧边栏 top_k 滑块（2~8）实时调整召回数量，无需重建向量库
 
-![问答演示](docs/qa.png)
+![问答主界面](docs/qa.png)
 
-![划重点与提纲](docs/summary.png)
+![一键划重点](docs/key-points.png)
+
+![复习提纲](docs/outline.png)
 
 ## 技术栈
 
